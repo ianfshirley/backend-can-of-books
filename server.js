@@ -32,15 +32,6 @@ async function getBooks(req, res, next) {
   }
 }
 
-// app.get('/books', async (req, res) => {
-//   const filterQuery = {};
-//   if (req.query.title) {
-//     filterQuery.location = req.query.title;
-//   }
-//   const books = await Book.find(filterQuery);
-//   res.send(books);
-// });
-
 app.get('*', (req, res) => {
   res.status(404).send('Not available');
 });
