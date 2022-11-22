@@ -1,5 +1,6 @@
 'use strict';
 
+// REQUIRE
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -20,6 +21,17 @@ db.once('open', function () {
 
 mongoose.connect(process.env.DATABASE_URL);
 
+app.get('/books', getBooks);
+
+async function getBooks(req, res, next) {
+  try {
+    let results = await Book.find();
+    res.status(200).send(results);
+  } catch(err) {
+    next(err);
+  }
+}
+
 // app.get('/books', async (req, res) => {
 //   const filterQuery = {};
 //   if (req.query.title) {
@@ -29,11 +41,13 @@ mongoose.connect(process.env.DATABASE_URL);
 //   res.send(books);
 // });
 
+app.get('*', (req, res) => {
+  res.status(404).send('Not available');
+});
 
-app.get('/test', (request, response) => {
-
-  response.send('test request received');
-
+// ERROR
+app.use((error, req, res) => {
+  res.status(500).send(error.messgae);
 });
 
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
