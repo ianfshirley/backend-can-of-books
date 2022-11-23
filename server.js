@@ -23,9 +23,13 @@ db.once('open', function () {
 mongoose.connect(process.env.DATABASE_URL);
 
 app.get('/books', getBooks);
-app.post('/books', postBooks);
-//path parameter is a variable that we declare in the path
-// app.delete('/books:id', deleteBooks);
+app.post('/books', postBook);
+// Path Parameter — a variable that we declare in the path
+// ex URL:
+// http://localhost:3001/cats/637bceabc57c693faee21e8f
+// I can access the value 637bceabc57c693faee21e8f with:
+// req.params.id
+app.delete('/books/:id', deleteBook);
 
 async function getBooks(req, res, next) {
   try {
@@ -35,7 +39,7 @@ async function getBooks(req, res, next) {
     next(err);
   }
 }
-async function postBooks(req, res, next) {
+async function postBook(req, res, next) {
   try {
     console.log(req.body);
     let newBook = await Book.create(req.body);
@@ -44,6 +48,18 @@ async function postBooks(req, res, next) {
     next(err);
   }
 }
+async function deleteBook(req, res, next) {
+  try {
+    // get the ID of the book we want to delete
+    // console.log(req.params.id);
+    await Book.findByIdAndDelete(req.params.id);
+    res.send('book deleted');
+  } catch(err) {
+    next(err);
+  }
+}
+
+
 app.get('*', (req, res) => {
   res.status(404).send('Not available');
 });
