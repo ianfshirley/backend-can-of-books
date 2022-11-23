@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3002;
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 //add validation to confirm we are wired up to our mongo DB
 const db = mongoose.connection;
@@ -22,6 +23,9 @@ db.once('open', function () {
 mongoose.connect(process.env.DATABASE_URL);
 
 app.get('/books', getBooks);
+app.post('/books', postBooks);
+//path parameter is a variable that we declare in the path
+// app.delete('/books:id', deleteBooks);
 
 async function getBooks(req, res, next) {
   try {
@@ -31,13 +35,21 @@ async function getBooks(req, res, next) {
     next(err);
   }
 }
-
+async function postBooks(req, res, next) {
+  try {
+    console.log(req.body);
+    let newBook = await Book.create(req.body);
+    res.send(newBook);
+  } catch(err) {
+    next(err);
+  }
+}
 app.get('*', (req, res) => {
   res.status(404).send('Not available');
 });
 
 // ERROR
-app.use((error, req, res) => {
+app.use((req, res, error) => {
   res.status(500).send(error.messgae);
 });
 
