@@ -30,6 +30,7 @@ app.post('/books', postBook);
 // I can access the value 637bceabc57c693faee21e8f with:
 // req.params.id
 app.delete('/books/:id', deleteBook);
+app.put('/books/:id', putBook);
 
 async function getBooks(req, res, next) {
   try {
@@ -58,7 +59,20 @@ async function deleteBook(req, res, next) {
     next(err);
   }
 }
-
+async function putBook(req, res, next) {
+  try {
+    let id = req.params.id;
+    let updatedBookData = req.body;
+    // findByIdAndUpdate() takes 3 params:
+    // 1. ID of the thing to update
+    // 2. the updated data object
+    // 3. an options object (replace the entire thing in the DB with this new thing)
+    let updatedBook = await Book.findByIdAndUpdate(id, updatedBookData, { new: true, overwrites: true });
+    res.status(200).send(updatedBook);
+  } catch(err) {
+    next(err);
+  }
+}
 
 app.get('*', (req, res) => {
   res.status(404).send('Not available');
